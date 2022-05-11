@@ -1,26 +1,27 @@
-on:
+on:  
   schedule:
     # Run this workflow every night at 5am UTC.
-    - cron: "0 5 * * *"
+     - cron: "0 5 * * *"
 
 jobs:
   scan_for_vulnerabilities:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/luhring/example-ci:latest
+      image: docker.cloudsmith.io/cloudsmith/examples/example-ci:latest
     steps:
+      - name: "login to Cloudsmith container registry" 
+        run: |
+          echo "${{ secrets.CLOUDSMITH_TOKEN }}" | docker login docker.cloudsmith.io -u ciara-carey --password-stdin
+
       - name: "retrieve SBOM from attestation in registry"
+        env:
+            COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}        
         run: |
           echo "${{ secrets.COSIGN_PUB }}" > ./cosign.pub
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u luhring --password-stdin
-
-          # We'll scan the image built from the latest commit on the default branch. In real scenarios, you'd want to be much more careful to ensure you're scanning all of the images that might be consumed in a downstream workflow.
-
-          DIGEST=$(crane digest "ghcr.io/luhring/example:git-$GITHUB_SHA")
-          IMAGE="ghcr.io/luhring/example@$DIGEST"
-
+          
+          IMAGE="docker.cloudsmith.io/cloudsmith/examples/example:latest"
           # Retrieve the attestation for this image. If the attestation has been tampered with, this command will fail. (This is a good thing! We don't want to scan for vulnerabilities using a faulty SBOM.)
-          cosign verify-attestation -key ./cosign.pub $IMAGE > ./attestation_output
+          cosign verify-attestation --key ./cosign.pub $IMAGE > ./attestation_output
 
           # Isolate the Syft SBOM from the rest of the attestation
           cat ./attestation_output | jq --slurp --compact-output 'map(.payload | @base64d | fromjson | .predicate.Data | fromjson | select(.descriptor.name == "syft")) | first' > ./sbom.syft.json
