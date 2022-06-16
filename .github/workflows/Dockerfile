@@ -13,3 +13,14 @@ COPY --from=builder /go/bin/crane /go/bin/crane
 RUN apk add curl docker jq
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+# —————
+#RUN apt-get update
+#RUN apt-get -y install python3
+#RUN apt-get -y install python3-setuptools
+#RUN apt-get -y install python3-pip
+
+RUN apk --update add python3 py3-pip python3-dev
+
+#FROM python:3
+RUN pip3 install --upgrade cloudsmith-cli
