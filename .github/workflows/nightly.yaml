@@ -1,7 +1,11 @@
-on:  
-  schedule:
-    # Run this workflow every night at 5am UTC.
-     - cron: "0 5 * * *"
+#on:  
+#  schedule:
+#    # Run this workflow every night at 5am UTC.
+#     - cron: "0 5 * * *"
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   scan_for_vulnerabilities:
@@ -30,6 +34,7 @@ jobs:
         run: |
           # Normally, we'd fail the pipeline if we detect vulnerabilities above a certain severity threshold. For this example, we won't.
 
+          grype sbom:./sbom.syft.json -f Critical
           grype sbom:./sbom.syft.json -o json | jq --compact-output > ./vulnerability-report.grype.json
 
       - uses: actions/upload-artifact@v2
