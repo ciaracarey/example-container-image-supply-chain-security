@@ -34,10 +34,18 @@ jobs:
         run: |
           # Normally, we'd fail the pipeline if we detect vulnerabilities above a certain severity threshold. For this example, we won't.
 
-          grype sbom:./sbom.syft.json -f Critical
+          try {
+            grype sbom:./sbom.syft.json -f Critical 
+          } catch (error) {
+              core.setFailed(error.message);
+          }
           grype sbom:./sbom.syft.json -o json | jq --compact-output > ./vulnerability-report.grype.json
 
       - uses: actions/upload-artifact@v2
         with:
           name: vulnerability-report.grype.json
           path: ./vulnerability-report.grype.json
+      - name: Quarantine if previous step fails
+        if: ${{ failure() }}
+        run: |
+          echo "quarantine image"
