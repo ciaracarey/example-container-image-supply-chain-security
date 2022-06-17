@@ -49,3 +49,5 @@ jobs:
         if: ${{ failure() }}
         run: |
           echo "quarantine image"
+          cloudsmith quarantine add cloudsmith/examples/"$SLUG" -k "${{ secrets.CLOUDSMITH_API_KEY }}
+
