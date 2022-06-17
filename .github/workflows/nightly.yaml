@@ -5,7 +5,7 @@
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   scan_for_vulnerabilities:
@@ -23,7 +23,7 @@ jobs:
         run: |
           echo "${{ secrets.COSIGN_PUB }}" > ./cosign.pub
           
-          IMAGE="docker.cloudsmith.io/cloudsmith/examples/example:latest"
+          IMAGE="docker.cloudsmith.io/cloudsmith/examples/test-image:latest"
           # Retrieve the attestation for this image. If the attestation has been tampered with, this command will fail. (This is a good thing! We don't want to scan for vulnerabilities using a faulty SBOM.)
           cosign verify-attestation --key ./cosign.pub $IMAGE > ./attestation_output
 

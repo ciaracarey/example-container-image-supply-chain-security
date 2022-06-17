@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build_image:
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: "build and push the image"
         run: |
-          IMAGE="docker.cloudsmith.io/cloudsmith/examples/example:latest"
+          IMAGE="docker.cloudsmith.io/cloudsmith/examples/test-image:latest"
           docker build -t "$IMAGE" .
           docker push "$IMAGE"
 
@@ -35,7 +35,7 @@ jobs:
           echo "${{ secrets.CLOUDSMITH_TOKEN }}" | docker login docker.cloudsmith.io -u ciara-carey --password-stdin
           echo "${{ secrets.COSIGN_KEY }}" > cosign.key
 
-          IMAGE="docker.cloudsmith.io/cloudsmith/examples/example:latest"
+          IMAGE="docker.cloudsmith.io/cloudsmith/examples/test-image:latest"
 
           # Sign the image (...and this step pushes the signature to the registry, too)
           cosign sign --key ./cosign.key "$IMAGE"
@@ -48,7 +48,7 @@ jobs:
     steps:
       - name: "create the SBOM using syft"
         run: |
-          IMAGE="docker.cloudsmith.io/cloudsmith/examples/example:latest"
+          IMAGE="docker.cloudsmith.io/cloudsmith/examples/test-image:latest"
 
           # We're using `jq` only to minimize the size of the SBOM payload. In the future, Syft might produce compacted JSON data by default.
 
@@ -98,7 +98,7 @@ jobs:
           echo "${{ secrets.CLOUDSMITH_TOKEN }}" | docker login docker.cloudsmith.io -u ciara-carey --password-stdin
           echo "${{ secrets.COSIGN_KEY }}" > cosign.key
 
-          IMAGE="docker.cloudsmith.io/cloudsmith/examples/example:latest"
+          IMAGE="docker.cloudsmith.io/cloudsmith/examples/test-image:latest"
 
           # Put the SBOM into a signed "attestation" about the image, and push this attestation to the registry.
           cosign attest --predicate "$SBOM_FILE" --key ./cosign.key "$IMAGE"
@@ -121,7 +121,7 @@ jobs:
           echo "${{ secrets.CLOUDSMITH_TOKEN }}" | docker login docker.cloudsmith.io -u ciara-carey --password-stdin
           echo "${{ secrets.COSIGN_KEY }}" > cosign.key
 
-          IMAGE="docker.cloudsmith.io/cloudsmith/examples/example:latest"
+          IMAGE="docker.cloudsmith.io/cloudsmith/examples/test-image:latest"
 
           # Put the vulnerability scan report into a signed "attestation" about the image, and push this attestation to the registry.
           cosign attest --predicate "$VULNERABILITY_SCAN_FILE" --key ./cosign.key "$IMAGE"
