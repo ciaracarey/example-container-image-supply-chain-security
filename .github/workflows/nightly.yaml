@@ -31,9 +31,11 @@ jobs:
           cat ./attestation_output | jq --slurp --compact-output 'map(.payload | @base64d | fromjson | .predicate.Data | fromjson | select(.descriptor.name == "syft")) | first' > ./sbom.syft.json
 
       - name: "scan for vulnerabilities"
+        env: 
+          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
         run: |
           # Normally, we'd fail the pipeline if we detect vulnerabilities above a certain severity threshold. For this example, we won't.
 
           #grype sbom:./sbom.syft.json -o json -f Critical | jq --compact-output > ./vulnerability-report.grype.json
-          cloudsmith quarantine add cloudsmith/examples/"$SLUG" -k "${{ secrets.CLOUDSMITH_API_KEY }}
+          cloudsmith quarantine add cloudsmith/examples/$SLUG
           
