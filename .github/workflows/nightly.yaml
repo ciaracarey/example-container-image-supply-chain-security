@@ -34,11 +34,6 @@ jobs:
         run: |
           # Normally, we'd fail the pipeline if we detect vulnerabilities above a certain severity threshold. For this example, we won't.
 
-          try {
-            grype sbom:./sbom.syft.json -o json -f Critical | jq --compact-output > ./vulnerability-report.grype.json
-            #grype sbom:./sbom.syft.json -f Critical 
-          } catch (error) {
-              core.setFailed(error.message);
-              cloudsmith quarantine add cloudsmith/examples/"$SLUG" -k "${{ secrets.CLOUDSMITH_API_KEY }}
-          }
-
+          #grype sbom:./sbom.syft.json -o json -f Critical | jq --compact-output > ./vulnerability-report.grype.json
+          cloudsmith quarantine add cloudsmith/examples/"$SLUG" -k "${{ secrets.CLOUDSMITH_API_KEY }}
+          
