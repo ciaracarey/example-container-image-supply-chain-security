@@ -34,11 +34,10 @@ jobs:
         env: 
           CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
         run: |
-          # Normally, we'd fail the pipeline if we detect vulnerabilities above a certain severity threshold. For this example, we won't.
-
+          # Fail the pipeline if we detect vulnerabilities above a certain severity threshold. For this example, we will use severity Critical.
           grype sbom:./sbom.syft.json -o json -f Critical | jq --compact-output > ./vulnerability-report.grype.json
       - name: Quarantine image if critical vulnerabilities exist
-        if: ${{ failure() }}
+        if: failure()
         env:
           CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
         run: |
