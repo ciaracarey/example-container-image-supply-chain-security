@@ -1,6 +1,6 @@
 # example-container-image-supply-chain-security
 
-Example repository that demonstrates a supply chain security workflow using Syft, Grype, Cosign using Cloudsmith as the Container Registry
+Example repository that demonstrates a supply chain security workflow using Syft, Grype, Cosign using Cloudsmith as the Container Registry 
 
 o run this example yourself:
 
